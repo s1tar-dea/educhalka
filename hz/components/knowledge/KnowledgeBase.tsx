@@ -225,8 +225,8 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
           <img src="/favicon.ico" alt="Educhalka Logo" className="w-8 h-8 object-contain" />
         </button>
 
-        {/* Subject nav */}
-        <nav className="flex gap-1 flex-shrink-0">
+        {/* Subject nav (Desktop only) */}
+        <nav className="hidden md:flex gap-1 flex-shrink-0">
           {(Object.entries(ALL_DATA) as [SubjectKey, SubjectData][]).map(([key, s]) => (
             <InteractiveHoverButton key={key} onClick={() => selectSubject(key)}
               className={`flex items-center w-auto gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all whitespace-nowrap
@@ -248,8 +248,8 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
           ))}
         </nav>
 
-        {/* Spacer + User + logout */}
-        <div className="ml-auto flex items-center gap-4 flex-shrink-0">
+        {/* Spacer + User + logout (Desktop only) */}
+        <div className="ml-auto hidden md:flex items-center gap-4 flex-shrink-0">
           <Link href="/profile" className="w-8 h-8 rounded-full overflow-hidden border border-border hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary ring-offset-background ring-offset-2">
             {user.avatar_url ? (
               <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -267,7 +267,7 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
       </header>
 
       {/* ── Body ── */}
-      <div className="flex flex-1 pt-14 overflow-hidden w-full">
+      <div className="flex flex-1 pt-14 pb-16 md:pb-0 overflow-hidden w-full relative">
         {/* Main content */}
         <main ref={contentRef} className="flex-1 overflow-y-auto relative w-full">
           <AnimatePresence mode="wait">
@@ -279,7 +279,15 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
                 <div className="climate-crisis-title text-8xl md:text-9xl lg:text-[10rem] tracking-widest text-primary mb-6">
                   EDUCHALKA
                 </div>
-                <p className="text-muted-foreground mb-10 text-lg md:text-xl font-bold">Школьная программа · 7–11 класс · 55+ тем с формулами и задачами</p>
+                <p className="text-muted-foreground mb-8 text-lg md:text-xl font-bold">Школьная программа · 7–11 класс · 55+ тем с формулами и задачами</p>
+
+                <div className="mb-12 flex justify-center">
+                  <InteractiveHoverButton 
+                    text="Выбрать предмет" 
+                    onClick={() => document.getElementById('subjects-grid')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="w-48 py-3"
+                  />
+                </div>
 
                 {/* ── Search Bar ── */}
                 <div className="w-full max-w-lg mb-8 relative">
@@ -331,7 +339,7 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
                 </div>
 
                 {/* Subject cards */}
-                <div className="flex gap-4 flex-wrap justify-center">
+                <div id="subjects-grid" className="flex gap-4 flex-wrap justify-center pt-8">
                   {(Object.entries(ALL_DATA) as [SubjectKey, SubjectData][]).map(([key, s]) => (
                     <motion.button key={key} onClick={() => selectSubject(key)}
                       whileHover={{ translateY: -4, scale: 1.02 }}
@@ -435,11 +443,41 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
           </AnimatePresence>
 
           {/* ── Theme toggle — fixed bottom right ── */}
-          <div className="fixed bottom-6 right-6 z-50">
+          <div className="fixed bottom-20 md:bottom-6 right-6 z-40">
             <AnimatedThemeToggle className="rounded-full w-12 h-12 shadow-lg shadow-black/10" />
           </div>
         </main>
       </div>
+
+      {/* ── Mobile Bottom Navigation Bar ── */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 h-16 bg-background/90 backdrop-blur-md border-t border-border z-50 flex items-center justify-around px-2 pb-safe">
+        <button onClick={() => { setCurrentSubject(null); setCurrentTopic(null); setShowResults(false) }} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${!currentSubject && !searchQuery ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+          <BookOpen className="w-6 h-6 mb-1" />
+          <span className="text-[10px] font-medium">Главная</span>
+        </button>
+        <button onClick={() => { setSearchQuery(' '); setShowResults(true); setCurrentSubject(null); setCurrentTopic(null) }} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${searchQuery ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+          <Star className="w-6 h-6 mb-1" />
+          <span className="text-[10px] font-medium">Поиск</span>
+        </button>
+        <Link href="/profile" className="flex flex-col items-center justify-center w-16 h-full text-muted-foreground hover:text-foreground transition-colors">
+          <div className="w-6 h-6 mb-1 rounded-full overflow-hidden border border-current">
+            {user.avatar_url ? (
+              <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center font-bold uppercase text-[10px]">
+                {(user.full_name || user.email || '?')[0]}
+              </div>
+            )}
+          </div>
+          <span className="text-[10px] font-medium">Профиль</span>
+        </Link>
+        <button onClick={handleLogout} className="flex flex-col items-center justify-center w-16 h-full text-muted-foreground hover:text-red-500 transition-colors">
+          <LogOut className="w-6 h-6 mb-1" />
+          <span className="text-[10px] font-medium">Выйти</span>
+        </button>
+      </nav>
     </div>
   )
 }
