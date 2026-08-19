@@ -77,6 +77,7 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set())
   const contentRef = useRef<HTMLDivElement>(null)
   const searchParams = useSearchParams()
+  const lastRandomTopicRef = useRef<string | null>(null)
 
   // Initial load from URL
   useEffect(() => {
@@ -181,6 +182,17 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
     contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentSubject])
 
+  const handleRandomTopic = useCallback(() => {
+    if (SEARCH_INDEX.length === 0) return
+    let randomItem
+    do {
+      randomItem = SEARCH_INDEX[Math.floor(Math.random() * SEARCH_INDEX.length)]
+    } while (SEARCH_INDEX.length > 1 && randomItem.topicId === lastRandomTopicRef.current)
+    
+    lastRandomTopicRef.current = randomItem.topicId
+    loadTopic(randomItem.subjectKey as SubjectKey, randomItem.sectionId, randomItem.topicId)
+  }, [loadTopic])
+
   const toggleSection = (id: string) => {
     setOpenSections(prev => {
       const next = new Set(prev)
@@ -218,7 +230,7 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
       />
 
       {/* ── Header ── */}
-      <header className="fixed top-0 inset-x-0 h-14 z-50 flex items-center gap-3 px-4 bg-background/80 backdrop-blur-md border-b border-border">
+      <header className="fixed top-0 inset-x-0 h-14 z-50 hidden md:flex items-center gap-3 px-4 bg-background/80 backdrop-blur-md border-b border-border">
         {/* Logo */}
         <button onClick={() => { setCurrentSubject(null); setCurrentTopic(null); setShowResults(false) }}
           className="flex items-center justify-center flex-shrink-0 hover:opacity-80 transition-opacity">
@@ -282,12 +294,21 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
                 <img src="/favicon.ico" alt="Educhalka Logo" className="w-32 h-32 md:hidden mb-6 drop-shadow-xl" />
                 <p className="text-muted-foreground mb-8 text-lg md:text-xl font-bold">Школьная программа · 7–11 класс · 55+ тем с формулами и задачами</p>
 
-                <div className="mb-12 flex justify-center">
-                  <InteractiveHoverButton 
-                    text="Выбрать предмет" 
-                    onClick={() => document.getElementById('subjects-grid')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-48 py-3"
-                  />
+                <div className="mb-12 flex flex-col md:flex-row items-center justify-center gap-4">
+                  <div className="hidden md:block">
+                    <InteractiveHoverButton 
+                      text="Выбрать предмет" 
+                      onClick={() => document.getElementById('subjects-grid')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="w-48 py-3"
+                    />
+                  </div>
+                  <div className="block md:hidden">
+                    <InteractiveHoverButton 
+                      text="Выбери за меня 💫" 
+                      onClick={handleRandomTopic}
+                      className="w-48 py-3"
+                    />
+                  </div>
                 </div>
 
                 {/* ── Search Bar ── */}
@@ -425,13 +446,10 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
                 {/* Optional Banner Image */}
                 {activeTopic.image && (
                   <div className="w-full relative h-64 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-md">
-                    <Image
+                    <img
                       src={activeTopic.image}
                       alt={activeTopic.title}
-                      fill
-                      priority
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 860px"
+                      className="object-cover w-full h-full"
                     />
                   </div>
                 )}
