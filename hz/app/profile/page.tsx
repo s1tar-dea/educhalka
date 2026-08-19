@@ -109,14 +109,14 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="h-full bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col">
+    <div className="h-full bg-background text-foreground relative overflow-hidden flex flex-col">
       {/* Background Dot Pattern (matches KnowledgeBase) */}
       <div className="absolute inset-0 pointer-events-none z-0" 
         style={{
@@ -137,7 +137,7 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto relative z-10 p-6 sm:p-10">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 p-6 sm:p-10">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-[300px_1fr] gap-10">
           
           {/* Left Column: Avatar & Basic Info */}

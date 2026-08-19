@@ -1,7 +1,7 @@
 'use client'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LogOut, BookOpen, ChevronRight, Star } from 'lucide-react'
+import { LogOut, BookOpen, ChevronRight, Star, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
@@ -269,16 +269,17 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
       {/* ── Body ── */}
       <div className="flex flex-1 pt-14 pb-16 md:pb-0 overflow-hidden w-full relative">
         {/* Main content */}
-        <main ref={contentRef} className="flex-1 overflow-y-auto relative w-full">
+        <main ref={contentRef} className="flex-1 overflow-y-auto overflow-x-hidden relative w-full">
           <AnimatePresence mode="wait">
             {!currentSubject ? (
               <motion.div key="welcome" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center min-h-full pb-[15vh] px-4 text-center">
 
                 {/* Title + subtitle */}
-                <div className="climate-crisis-title text-8xl md:text-9xl lg:text-[10rem] tracking-widest text-primary mb-6">
+                <div className="climate-crisis-title hidden md:block text-8xl md:text-9xl lg:text-[10rem] tracking-widest text-primary mb-6">
                   EDUCHALKA
                 </div>
+                <img src="/favicon.ico" alt="Educhalka Logo" className="w-32 h-32 md:hidden mb-6 drop-shadow-xl" />
                 <p className="text-muted-foreground mb-8 text-lg md:text-xl font-bold">Школьная программа · 7–11 класс · 55+ тем с формулами и задачами</p>
 
                 <div className="mb-12 flex justify-center">
@@ -458,7 +459,7 @@ export default function KnowledgeBase({ user }: { user: UserInfo }) {
         </button>
         <button onClick={() => { setSearchQuery(' '); setShowResults(true); setCurrentSubject(null); setCurrentTopic(null) }} 
           className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${searchQuery ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-          <Star className="w-6 h-6 mb-1" />
+          <Search className="w-6 h-6 mb-1" />
           <span className="text-[10px] font-medium">Поиск</span>
         </button>
         <Link href="/profile" className="flex flex-col items-center justify-center w-16 h-full text-muted-foreground hover:text-foreground transition-colors">
