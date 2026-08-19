@@ -57,8 +57,10 @@ export function SignInCard({ mode = 'login' }: SignInCardProps) {
     setError('');
     setSuccessMessage('');
 
+    const cleanEmail = email.trim().toLowerCase();
+
     if (mode === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
       if (error) {
         setError('Неверный email или пароль. Если вы только что зарегистрировались — проверьте почту и подтвердите email.');
         setIsLoading(false);
@@ -68,7 +70,7 @@ export function SignInCard({ mode = 'login' }: SignInCardProps) {
       }
     } else {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: cleanEmail,
         password,
         options: { data: { full_name: name } },
       });
@@ -233,6 +235,9 @@ export function SignInCard({ mode = 'login' }: SignInCardProps) {
                     onFocus={() => setFocusedInput('email')}
                     onBlur={() => setFocusedInput(null)}
                     className="pl-11 h-12 text-base"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
                     required
                   />
                 </div>
